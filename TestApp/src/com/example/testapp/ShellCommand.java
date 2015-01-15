@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import java.lang.Process;
+import java.lang.Runtime;
 import java.lang.StringBuilder;
 
 import android.util.Log;
@@ -77,7 +78,7 @@ public class ShellCommand {
         mCommand = command;
 
         if (inSeparateShell) {
-            String [] shellCmd = new String[] {"/system/bin/input", "-c", command};   
+            String [] shellCmd = new String[] {"/system/bin/echo", "-c", command};   
             mProcess = Runtime.getRuntime().exec(shellCmd);
         } else {
         	int ch;
