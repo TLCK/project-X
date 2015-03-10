@@ -5,6 +5,7 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.bluetooth.BluetoothA2dp;
 import android.bluetooth.BluetoothHeadset;
 import android.bluetooth.BluetoothServerSocket;
@@ -35,14 +36,20 @@ import android.view.MotionEvent;
 import android.os.SystemClock;
 import android.preference.CheckBoxPreference;
 
+import java.lang.reflect.Method;
 import com.android.internal.telephony.RILConstants;
 import com.android.internal.telephony.RIL;
 import com.android.internal.telephony.Phone;
 import com.android.internal.telephony.PhoneBase;
 import com.android.internal.telephony.PhoneFactory;
 import com.android.internal.telephony.CallStateException;
+import com.android.internal.telephony.ITelephony;
 
 import static android.provider.Settings.Global.PREFERRED_NETWORK_MODE;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Set;
+import java.util.UUID;
 
 public class BrowsingReciever extends BroadcastReceiver{
     private PowerManager pm;
@@ -56,7 +63,51 @@ public class BrowsingReciever extends BroadcastReceiver{
     private BluetoothDevice btDev;
     private Intent arg0;
     private Intent arg1;	
-    private Intent intent_IntentCall;	
+    private Intent intent_IntentCall;
+    private ITelephony itelephony;
+    private OutputStream outstream;
+    protected BluetoothSocket btSocket;    
+
+private void answerPhoneHeadsethook(Context context) {
+		// Simulate a press of the headset button to pick up the call
+		Intent buttonDown = new Intent(Intent.ACTION_MEDIA_BUTTON);		
+		buttonDown.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_HEADSETHOOK));
+		context.sendOrderedBroadcast(buttonDown, "android.permission.CALL_PRIVILEGED");
+
+		// froyo and beyond trigger on buttonUp instead of buttonDown
+		Intent buttonUp = new Intent(Intent.ACTION_MEDIA_BUTTON);		
+		buttonUp.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK));
+		context.sendOrderedBroadcast(buttonUp, "android.permission.CALL_PRIVILEGED");
+}
+
+private void answerPhoneAidl(Context context) throws Exception {
+		// Set up communication with the telephony service (thanks to Tedd's Droid Tools!)
+		TelephonyManager tm = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
+		Class c = Class.forName(tm.getClass().getName());
+		Method m = c.getDeclaredMethod("getITelephony");
+		m.setAccessible(true);
+		ITelephony telephonyService;
+		telephonyService = (ITelephony)m.invoke(tm);
+
+		// Silence the ringer and answer the call!
+		telephonyService.silenceRinger();
+		telephonyService.answerRingingCall();
+	}
+
+private void endCall(Context context) throws Exception {
+                // Set up communication with the telephony service (thanks to Tedd's Droid Tools!)
+                TelephonyManager tm = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
+                Class c = Class.forName(tm.getClass().getName());
+                Method m = c.getDeclaredMethod("getITelephony");
+                m.setAccessible(true);
+                ITelephony telephonyService;
+                telephonyService = (ITelephony)m.invoke(tm);
+
+                // Silence the ringer and answer the call!
+                //telephonyService.silenceRinger();
+                telephonyService.endCall();
+        }
+	
 public void sendKeySync(KeyEvent event) {
 
         long downTime = event.getDownTime();
@@ -133,9 +184,9 @@ private BluetoothProfile.ServiceListener A2dpServiceListener = new BluetoothProf
 	cm = (ConnectivityManager)context.getSystemService(context.CONNECTIVITY_SERVICE);
 	pm = (PowerManager)context.getSystemService(context.POWER_SERVICE);
 	wm = (WifiManager)context.getSystemService(context.WIFI_SERVICE);
-        bt = BluetoothAdapter.getDefaultAdapter();
+	bt = BluetoothAdapter.getDefaultAdapter();
 	mNetworkInfo = cm.getActiveNetworkInfo();
-	Log.i("woden", "onReceive");
+	
 	
 	Bundle extras = intent.getExtras();
     	int id = extras.getInt("id");        
@@ -146,21 +197,35 @@ private BluetoothProfile.ServiceListener A2dpServiceListener = new BluetoothProf
 	PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "bright");
 	PowerManager.WakeLock w2 = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "bright");
 	
+	
 /*String phone_state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
 if (phone_state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
-			  try
-        {
-            phone.acceptCall();
-        }
-        catch(CallStateException e){
-            //Log.e(tag,e.toString() );
-        }
-		}		
+	TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+		try {
+			answerPhoneAidl(context);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			Log.d("AutoAnswer","Error trying to answer using telephony service.  Falling back to headset.");
+			answerPhoneHeadsethook(context);
+		}
+			
+}*/
+
+
+/*calling
+String phone_number="0937427947";
+Intent IntentCall = new Intent("android.intent.action.CALL",Uri.parse("tel:" + phone_number));
+IntentCall.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+context.startActivity(IntentCall);
+
+SystemClock.sleep(15000);
+try{
+endCall(context);
+}catch(Exception e){}
 */
 
-
-
-//chrome browsing///////////////////////////////////////
+//chromption e///////////////////////////////////////
 //Intent intent_IntentCall = new Intent("android.intent.action.VIEW",Uri.parse("http://218.211.38.216/"));
 //intent_IntentCall.setClassName("com.android.chrome","com.google.android.apps.chrome.Main");
 //intent_IntentCall.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -195,13 +260,12 @@ if (phone_state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
 //context.startActivity(intent_IntentCall);
 
 
-
-
 if(id==0){
 bundle.putInt("settings", 0);
 arg0.putExtras(bundle);
 context.startService(arg0);
 }
+
 
 if(id==1){
 bundle.putInt("settings", 1);
@@ -216,27 +280,9 @@ context.startService(arg0);
 }
 
 if(id==3){
-//bundle.putInt("settings", 3);
-//arg0.putExtras(bundle);
-//context.startService(arg0);
-Log.i("woden","chrome 3G"+14);
-while(!pm.isScreenOn()){ sendkeyevent(KeyEvent.KEYCODE_POWER);}
-wl.acquire();
-w2.acquire(50000); 
-//sendkeyevent(KeyEvent.KEYCODE_HOME);
-//SystemClock.sleep(5000);
-//sendkeyevent(KeyEvent.KEYCODE_DPAD_UP);
-//sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
-SystemClock.sleep(5000);
-//sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
-//SystemClock.sleep(5000);
-Intent intent_IntentCall = new Intent("android.intent.action.VIEW",Uri.parse("http://218.211.38.216/"));
-intent_IntentCall.setClassName("com.android.chrome","com.google.android.apps.chrome.Main");
-intent_IntentCall.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-context.startActivity(intent_IntentCall);
-SystemClock.sleep(10000);
-sendxy(290,290);
-wl.release();
+bundle.putInt("settings", 3);
+arg0.putExtras(bundle);
+context.startService(arg0);
 }
 
 if(id==4){
@@ -258,24 +304,9 @@ context.startService(arg0);
 }
 
 if(id==7){
-//bundle.putInt("settings", 7);
-//arg0.putExtras(bundle);
-//context.startService(arg0);
-Log.i("woden","chrome wifi"+7);
-while(!pm.isScreenOn()){ sendkeyevent(KeyEvent.KEYCODE_POWER);}
-wl.acquire();
-w2.acquire(50000); 
-SystemClock.sleep(5000);
-Intent intent_IntentCall = new Intent("android.intent.action.VIEW",Uri.parse("http://218.211.38.216/"));
-intent_IntentCall.setClassName("com.android.chrome","com.google.android.apps.chrome.Main");
-intent_IntentCall.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-context.startActivity(intent_IntentCall);
-//sendxy(80,60);
-//SystemClock.sleep(5000);
-//sendxy(300,300);
-SystemClock.sleep(10000);
-sendxy(290,290);
-wl.release();
+bundle.putInt("settings", 7);
+arg0.putExtras(bundle);
+context.startService(arg0);
 }
 
 if(id==8){
@@ -290,296 +321,6 @@ arg0.putExtras(bundle);
 context.startService(arg0);
 }
 
-if(id==10){
-bundle.putInt("settings", 10);
-arg0.putExtras(bundle);
-context.startService(arg0);
-}
-
-if(id==11){
-bundle.putInt("settings", 11);
-arg0.putExtras(bundle);
-context.startService(arg0);
-}
-
-if(id==12){
-bundle.putInt("settings", 12);
-arg0.putExtras(bundle);
-context.startService(arg0);
-}
-
-if(id==13){
-bundle.putInt("settings", 13);
-arg0.putExtras(bundle);
-context.startService(arg0);
-}
-
-if(id==14){
-bundle.putInt("settings", 14);
-arg0.putExtras(bundle);
-context.startService(arg0);
-}
-
-if(id==15){
-bundle.putInt("settings", 15);
-arg0.putExtras(bundle);
-context.startService(arg0);
-}
-
-if(id==16){
-bundle.putInt("settings", 16);
-arg0.putExtras(bundle);
-context.startService(arg0);
-}
-
-if(id==17){
-bundle.putInt("settings", 17);
-arg0.putExtras(bundle);
-context.startService(arg0);
-}
-
-if(id==18){
-bundle.putInt("settings", 18);
-arg0.putExtras(bundle);
-context.startService(arg0);
-}
-/* 
-if(id==0){	
-	wl.acquire();
-	Log.i("woden","2G data disable"+0);
-        cm.setAirplaneMode(false);
-	//bundle.putInt("settings", 0);
-        //arg0.putExtras(bundle);
-        //context.startService(arg0);
-        int networkType = Phone.NT_MODE_GSM_ONLY;
-        phone = PhoneFactory.getDefaultPhone();
-        android.provider.Settings.Global.putInt(phone.getContext().getContentResolver(),android.provider.Settings.Global.PREFERRED_NETWORK_MODE,networkType);
-        phone.setPreferredNetworkType(networkType, null);
-        wl.release();
-}
-
-if(id==1){
-	Log.i("woden","2G data enable"+1);
-        wl.acquire();
-        cm.setMobileDataEnabled(true);
-        wl.release();
-}
-
-
-if(id==2){
-	Log.i("woden","3G data enable"+2);
-        wl.acquire();
-	//bundle.putInt("settings", 2);
-        //arg0.putExtras(bundle);
-        //context.startService(arg0);
-        int networkType = Phone.NT_MODE_WCDMA_PREF;
-        phone = PhoneFactory.getDefaultPhone();
-        android.provider.Settings.Global.putInt(phone.getContext().getContentResolver(),android.provider.Settings.Global.PREFERRED_NETWORK_MODE,networkType);
-        phone.setPreferredNetworkType(networkType, null);
-        wl.release();
-}
-
-if(id==3){
-        Log.i("woden","chrome 3G"+14);
-        wl.acquire();
-        sendkeyevent(KeyEvent.KEYCODE_HOME);
-        SystemClock.sleep(5000);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_UP);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
-        SystemClock.sleep(5000);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
-        SystemClock.sleep(10000);
-        sendxy(290,290);
-        wl.release();
-}
-
-
-if(id==4){
-	Log.i("woden","3G data disable"+3);
-	wl.acquire();
-	sendxy(320,65);
-        cm.setMobileDataEnabled(false);
-        wl.release();
-}
-	
-if(id==5){
-	Log.i("woden","wifi on"+4);
-	wl.acquire();
-        cm.setAirplaneMode(true);
-        wm.setWifiEnabled(true);
-        wl.release();
-}
-	
-if(id==6){
-	Log.i("woden","wifi connet to AP"+5);
-	wl.acquire();
-      	String networkSSID = "sw3rd2";
-	String networkPass = "qwertyui";
-	WifiConfiguration conf = new WifiConfiguration();
-	conf.SSID = String.format("\"%s\"", networkSSID);
-	conf.preSharedKey = String.format("\"%s\"", networkPass);;
-	int netId = wm.addNetwork(conf);
-	wm.disconnect();
-	wm.enableNetwork(netId, true);
-	wm.reconnect();
-        wl.release();
-}
-
-if(id==7){
-        Log.i("woden","chrome wifi"+15);
-        wl.acquire();
-        SystemClock.sleep(5000);
-        sendxy(80,60);
-        SystemClock.sleep(5000);
-        sendxy(300,300);
-        SystemClock.sleep(5000);
-        sendxy(290,290);
-        wl.release();
-}
-
-if(id==8){
-	Log.i("woden","wifi 3G associated"+6);
-	wl.acquire();
-	sendxy(320,65);
-        cm.setAirplaneMode(false);
-        cm.setMobileDataEnabled(true);
-        wl.release();
-}
-
-if(id==9){
-	Log.i("woden","bt On"+7);
-	wl.acquire();
-        wm.setWifiEnabled(false);
-	cm.setMobileDataEnabled(false);
-	cm.setAirplaneMode(true);
-        bt.enable();
-        wl.release();
-}
-
-if(id==10){
-        Log.i("woden","bt connect to HS"+8);
-        wl.acquire();
-	sendkeyevent(KeyEvent.KEYCODE_SETTINGS);
-	SystemClock.sleep(5000);
-	sendkeyevent(KeyEvent.KEYCODE_DPAD_DOWN);
-	sendkeyevent(KeyEvent.KEYCODE_DPAD_DOWN);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
-        SystemClock.sleep(5000);
-	sendkeyevent(KeyEvent.KEYCODE_DPAD_DOWN);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_DOWN);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
-        wl.release();
-}
-	
-if(id==11){
-	Log.i("woden","brightness MAX"+9);
-	wl.acquire();
-        bt.disable();
-        Settings.System.putInt(context.getContentResolver(),Settings.System.SCREEN_BRIGHTNESS,255);
-        wl.release();
-}
-
-if(id==12){
-	Log.i("woden","brightness MIN"+10);
-	wl.acquire();
-        Settings.System.putInt(context.getContentResolver(),Settings.System.SCREEN_BRIGHTNESS,0);
-        wl.release();
-}
-
-if(id==13){
-	Log.i("woden","brightness 100nits"+11);
-        wl.acquire();
-        Settings.System.putInt(context.getContentResolver(),Settings.System.SCREEN_BRIGHTNESS,69);
-        wl.release();
-}
-
-if(id==14){
-        Log.i("woden","recording"+12);
-        wl.acquire();
-	sendkeyevent(KeyEvent.KEYCODE_HOME);
-        SystemClock.sleep(5000);
-	sendkeyevent(KeyEvent.KEYCODE_LAUNCH_CAMERA);
-	SystemClock.sleep(10000);
-        sendxy(1200,500);
-        wl.release();
-}
-
-if(id==15){
-	Log.i("woden","music"+13);
-        wl.acquire();
-	sendkeyevent(KeyEvent.KEYCODE_HOME);
-	SystemClock.sleep(5000);
-	sendkeyevent(KeyEvent.KEYCODE_DPAD_UP);
-	sendkeyevent(KeyEvent.KEYCODE_DPAD_UP);
-	sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
-	SystemClock.sleep(5000);
-	sendkeyevent(KeyEvent.KEYCODE_DPAD_RIGHT);
-	sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
-	SystemClock.sleep(5000);
-	sendkeyevent(KeyEvent.KEYCODE_MEDIA_PLAY);
-	wl.release();
-}
-	
-if(id==16){
-	Log.i("woden","video 720p"+16);
-        wl.acquire();
-	sendkeyevent(KeyEvent.KEYCODE_MEDIA_PAUSE);
-	sendkeyevent(KeyEvent.KEYCODE_HOME);
-        SystemClock.sleep(5000);
-	sendkeyevent(KeyEvent.KEYCODE_DPAD_UP);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
-        SystemClock.sleep(5000);
-	sendkeyevent(KeyEvent.KEYCODE_DPAD_DOWN);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
-        SystemClock.sleep(5000);
-	sendkeyevent(KeyEvent.KEYCODE_DPAD_DOWN);
-	sendkeyevent(KeyEvent.KEYCODE_DPAD_DOWN);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
-	wl.release();
-}
-
-if(id==17){
-	Log.i("woden","video 1080p"+17);
-        wl.acquire();
-	sendkeyevent(KeyEvent.KEYCODE_BACK);
-        SystemClock.sleep(5000);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_DOWN);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
-	wl.release();
-}
-
-if(id==18){
-        Log.i("woden","snowboard"+18);
-        wl.acquire();
-        sendkeyevent(KeyEvent.KEYCODE_HOME);
-        SystemClock.sleep(5000);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_UP);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
-        SystemClock.sleep(5000);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_RIGHT);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_RIGHT);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
-        SystemClock.sleep(30000);
-        sendxy(250,370);
-        SystemClock.sleep(10000);
-        sendxy(250,370);
-        SystemClock.sleep(10000);
-        sendxy(250,230);
-        SystemClock.sleep(10000);
-        sendxy(270,650);
-        SystemClock.sleep(10000);
-        sendxy(270,650);
-        SystemClock.sleep(10000);
-        sendxy(270,650);
-        SystemClock.sleep(10000);
-        sendxy(270,650);
-        SystemClock.sleep(10000);
-        sendxy(270,650);
-        SystemClock.sleep(10000);
-        sendxy(270,650);
-        wl.release();
-}
-*/
 
 }
 }

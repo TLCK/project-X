@@ -4,5 +4,15 @@
     <string name="app_name">TestApp</string>
     <string name="hello_world">Hello world!</string>
     <string name="start">start</string>
+  <string name="Video_playback720p_HS">Video playback720p HS</string>
+    <string name="Audio_playback_HS">Audio playback HS</string>
+    <string name="Screen_off_idle">Screen off idle</string>
+    <string name="Screen_on_white_color_photo">Screen on white color photo</string>
+    <string name="BT_Connected">BT Connected</string>
+    <string name="BT_on">BT on</string>
+    <string name="Flight_mode_suspend">Flight mode suspend</string>
+    <string name="WiFi_on">WiFi on</string>
+    <string name="CDMA_data_on">3G data on</string>
+    <string name="WiFi_Connected">WiFi_Connected</string>
 
 </resources>
