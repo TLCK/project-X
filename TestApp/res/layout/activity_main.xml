@@ -1,8 +1,12 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_height="match_parent"
+android:layout_width="match_parent"
+tools:context="${relativePackage}.${activityClass}">
+
+<RelativeLayout 
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="${relativePackage}.${activityClass}" >
+    android:layout_height="match_parent">
  
     <TextView
         android:id="@+id/textView1"
@@ -34,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/checkBox7"
-        android:text="@string/Screen_off_idle" />
+        android:text="@string/Screen_on_white_color_photo" />
 
     <CheckBox
         android:id="@+id/checkBox4"
@@ -50,7 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/checkBox4"
-        android:text="@string/BT_on" />
+        android:text="@string/Browsing_wifi" />
 
     <CheckBox
         android:id="@+id/checkBox6"
@@ -58,7 +62,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/checkBox5"
-        android:text="@string/BT_Connected" />
+        android:text="@string/BT_on" />
 
     <CheckBox
         android:id="@+id/checkBox7"
@@ -66,7 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/checkBox6"
-        android:text="@string/Screen_on_white_color_photo" />
+        android:text="@string/BT_Connected" />
 
     <CheckBox
         android:id="@+id/checkBox9"
@@ -74,7 +78,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/checkBox8"
-        android:text="@string/Audio_playback_HS" />
+        android:text="@string/Screen_off_idle" />
 
     <CheckBox
         android:id="@+id/checkBox10"
@@ -82,7 +86,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/checkBox9"
-        android:text="@string/Video_playback720p_HS" />
+        android:text="@string/Audio_playback_HS" />
 
     <Button
         android:id="@+id/button1"
@@ -100,4 +104,13 @@
         android:layout_below="@+id/textView1"
         android:text="@string/Flight_mode_suspend" />
 
+    <CheckBox
+        android:id="@+id/checkBox11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/checkBox10"
+        android:text="@string/Video_playback720p_HS" />
+
 </RelativeLayout>
+</ScrollView>

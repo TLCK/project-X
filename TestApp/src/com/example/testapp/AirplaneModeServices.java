@@ -213,7 +213,6 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
 
 	if(settings==0){
 	/////////////////////////////////////////////////////////////////////
-	while(isAirplaneon){cm.setAirplaneMode(false); isAirplaneon=false;}
 	while(wm.isWifiEnabled()){wm.setWifiEnabled(false);}
 	while(isDataon){tm.setDataEnabled(false);isDataon=false;}
 	////////////////////////////////////////////////////////////////////
@@ -223,6 +222,7 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
                 	
         try {
             outstream.write(msgBuffer);
+	    Log.i("woden","airplane-mode");
 	    SystemClock.sleep(3000);
 	    outstream.close();
 	    outstream=null;
@@ -230,24 +230,23 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
             // TODO ..... catch ..
             e.printStackTrace();
             }
-	while(bt.isEnabled()){ bt.disable(); }
+	while(bt.isEnabled()){ bt.disable();}
 	while(!isAirplaneon){cm.setAirplaneMode(true); isAirplaneon=true;}
 	}
 
 	if(settings==1){
-	Log.i("woden","3G data enable"+0);
 	while(!pm.isScreenOn()){ sendkeyevent(KeyEvent.KEYCODE_POWER);}
 	wl.acquire();
 	//////////////////////////////////////////////////////////////////////
         while(isAirplaneon){cm.setAirplaneMode(false); isAirplaneon=false;}
         while(wm.isWifiEnabled()){wm.setWifiEnabled(false);}
-        while(isDataon){tm.setDataEnabled(false);isDataon=false;}
 	//////////////////////////////////////////////////////////////////////
 	ConnecttoBTServer();
 	String message = "3G-data-enable";
         byte[] msgBuffer = message.getBytes();
         try {
             outstream.write(msgBuffer);
+	    Log.i("woden","3G-data-enable");
 	    SystemClock.sleep(3000);
 	    outstream.close();
 	    outstream=null;
@@ -255,22 +254,15 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
            // TODO ..... catch ..
             e.printStackTrace();
             }
-	while(bt.isEnabled()){ bt.disable(); }
-        int networkType = Phone.NT_MODE_WCDMA_PREF;
-        phone = PhoneFactory.getDefaultPhone();
-        android.provider.Settings.Global.putInt(phone.getContext().getContentResolver(),android.provider.Settings.Global.PREFERRED_NETWORK_MODE,networkType);
-        phone.setPreferredNetworkType(networkType, null);
-		//cm.setMobileDataEnabled(true);
-	tm.setDataEnabled(true); isDataon=true;
+	while(bt.isEnabled()){ bt.disable();}
+	while(!isDataon){tm.setDataEnabled(true); isDataon=true;}
 	wl.release();
         }	
 
 	if(settings==2){
-	Log.i("woden","wifi on"+1);
 	while(!pm.isScreenOn()){ sendkeyevent(KeyEvent.KEYCODE_POWER);}
         wl.acquire();
 	 //////////////////////////////////////////////////////////////////////
-        while(wm.isWifiEnabled()){wm.setWifiEnabled(false);}
         while(isDataon){tm.setDataEnabled(false);isDataon=false;}
         //////////////////////////////////////////////////////////////////////
 	ConnecttoBTServer();
@@ -278,6 +270,7 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
         byte[] msgBuffer = message.getBytes();
         try {
             outstream.write(msgBuffer);
+	    Log.i("woden","wifi-on");
 	    SystemClock.sleep(3000);
 	    outstream.close();
 	    outstream=null;	    
@@ -285,7 +278,7 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
            // TODO ..... catch ..
             e.printStackTrace();
             }
-	while(bt.isEnabled()){ bt.disable(); }
+	while(bt.isEnabled()){ bt.disable();}
 	while(!isAirplaneon){cm.setAirplaneMode(true); isAirplaneon=true;}
 	SystemClock.sleep(3000);
 	while(!wm.isWifiEnabled()){wm.setWifiEnabled(true);}
@@ -293,11 +286,9 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
         }
 	
 	if(settings==3){
-	Log.i("woden","wifi-connected"+2);
 	while(!pm.isScreenOn()){ sendkeyevent(KeyEvent.KEYCODE_POWER);}
 	wl.acquire();
 	 //////////////////////////////////////////////////////////////////////
-        while(wm.isWifiEnabled()){wm.setWifiEnabled(false);}
         while(isDataon){tm.setDataEnabled(false);isDataon=false;}
         //////////////////////////////////////////////////////////////////////
 	ConnecttoBTServer();
@@ -305,6 +296,7 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
         byte[] msgBuffer = message.getBytes();
         try {
             outstream.write(msgBuffer);
+	    Log.i("woden","wifi-connected");
 	    SystemClock.sleep(3000);
 	    outstream.close();
 	    outstream=null;
@@ -312,12 +304,12 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
            // TODO ..... catch ..
             e.printStackTrace();
             }
-	while(bt.isEnabled()){ bt.disable(); }
+	while(bt.isEnabled()){ bt.disable();}
 	while(!isAirplaneon){cm.setAirplaneMode(true); isAirplaneon=true;}
 	SystemClock.sleep(3000);
 	while(!wm.isWifiEnabled()){wm.setWifiEnabled(true);}
-	String networkSSID = "sw3rd2";
-        String networkPass = "qwertyui";
+	String networkSSID = "AndroidAPPP";
+        String networkPass = "asdfghjkl";
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = String.format("\"%s\"", networkSSID);
         conf.preSharedKey = String.format("\"%s\"", networkPass);;
@@ -329,7 +321,6 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
 	}
 
 	if(settings==4){
-	Log.i("woden","BT on"+4);
 	while(!pm.isScreenOn()){ sendkeyevent(KeyEvent.KEYCODE_POWER);}
 	wl.acquire();
          //////////////////////////////////////////////////////////////////////
@@ -341,6 +332,7 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
         byte[] msgBuffer = message.getBytes();
         try {
             outstream.write(msgBuffer);
+	    Log.i("woden","BT-on");
 	    SystemClock.sleep(3000);
 	    outstream.close();
 	    outstream=null;
@@ -349,12 +341,12 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
             e.printStackTrace();
             }
 	while(!isAirplaneon){cm.setAirplaneMode(true); isAirplaneon=true;}
-        while(!bt.isEnabled()){ bt.enable(); }
+        SystemClock.sleep(3000);
+	while(!bt.isEnabled()){ bt.enable(); }
         wl.release();
 	}
 
 	if(settings==5){
-	Log.i("woden","BT connected"+5);
 	while(!pm.isScreenOn()){ sendkeyevent(KeyEvent.KEYCODE_POWER);}
 	wl.acquire();
          //////////////////////////////////////////////////////////////////////
@@ -366,6 +358,7 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
         byte[] msgBuffer = message.getBytes();
         try {
             outstream.write(msgBuffer);
+	    Log.i("woden","BT-connected");
 	    SystemClock.sleep(3000);
 	    outstream.close();
 	    outstream=null;
@@ -373,25 +366,23 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
            // TODO ..... catch ..
             e.printStackTrace();
             }
-	while(!bt.isEnabled()){ bt.enable(); }
 	while(!isAirplaneon){cm.setAirplaneMode(true); isAirplaneon=true;}
-      	Intent intent_IntentCall = new Intent();
+      	SystemClock.sleep(3000);
+	while(!bt.isEnabled()){ bt.enable();}
+	Intent intent_IntentCall = new Intent();
         intent_IntentCall.setClassName("com.android.settings","com.android.settings.bluetooth.BluetoothSettings");
         intent_IntentCall.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         this.startActivity(intent_IntentCall);
-        SystemClock.sleep(3000);
+        SystemClock.sleep(5000);
         sendkeyevent(KeyEvent.KEYCODE_DPAD_DOWN);
         sendkeyevent(KeyEvent.KEYCODE_DPAD_DOWN);
-	SystemClock.sleep(3000);
         sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
         wl.release();
 	}
 	
 	if(settings==6){
-	Log.i("woden","screen on white color"+6);
 	while(!pm.isScreenOn()){ sendkeyevent(KeyEvent.KEYCODE_POWER);}
 	wl.acquire();
-	w2.acquire(3000);
 	 //////////////////////////////////////////////////////////////////////
         while(wm.isWifiEnabled()){wm.setWifiEnabled(false);}
 	while(isDataon){tm.setDataEnabled(false);isDataon=false;}
@@ -401,6 +392,7 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
         byte[] msgBuffer = message.getBytes();
         try {
             outstream.write(msgBuffer);
+	    Log.i("woden","Screen-on-white");
 	    SystemClock.sleep(3000);
 	    outstream.close();
 	    outstream=null;
@@ -408,21 +400,21 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
            // TODO ..... catch ..
             e.printStackTrace();
             }
-	while(bt.isEnabled()){ bt.disable(); }
+	while(bt.isEnabled()){bt.disable();}
 	while(!isAirplaneon){cm.setAirplaneMode(true); isAirplaneon=true;}
 	Intent intent_IntentCall = new Intent();
         intent_IntentCall.setClassName("com.asus.gallery","com.asus.gallery.app.EPhotoActivity");
         intent_IntentCall.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         this.startActivity(intent_IntentCall);
         SystemClock.sleep(5000);
-        sendxy(500,200);
-        SystemClock.sleep(5000);
+        sendxy(600,300);
+        SystemClock.sleep(1000);
         sendxy(150,400);
+        w2.acquire(390000);
 	wl.release();
 	}
 
 	if(settings==7){
-	Log.i("woden","screen off idle"+8);
 	while(!pm.isScreenOn()){ sendkeyevent(KeyEvent.KEYCODE_POWER);}
 	wl.acquire();
 	 //////////////////////////////////////////////////////////////////////
@@ -434,6 +426,7 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
         byte[] msgBuffer = message.getBytes();
         try {
             outstream.write(msgBuffer);
+	    Log.i("woden","screen-off-idle");
 	    SystemClock.sleep(3000);
 	    outstream.close();
 	    outstream=null;
@@ -441,16 +434,15 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
            // TODO ..... catch ..
             e.printStackTrace();
             }
-	while(bt.isEnabled()){ bt.disable(); }
+	while(bt.isEnabled()){bt.disable();}
 	while(!isAirplaneon){cm.setAirplaneMode(true); isAirplaneon=true;}
         sendkeyevent(KeyEvent.KEYCODE_HOME);
         PowerManager.WakeLock wakelock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "cpu on");
-        wakelock.acquire(3000);
+        wakelock.acquire(390000);
         wl.release();	
 	}
 
 	if(settings==8){
-	Log.i("woden","audio playback HS"+9);
 	while(!pm.isScreenOn()){ sendkeyevent(KeyEvent.KEYCODE_POWER);}
 	wl.acquire();
 	 //////////////////////////////////////////////////////////////////////
@@ -462,6 +454,7 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
         byte[] msgBuffer = message.getBytes();
         try {
             outstream.write(msgBuffer);
+	    Log.i("woden","Audio-playback-HS");
 	    SystemClock.sleep(3000);
 	    outstream.close();
 	    outstream=null;
@@ -469,19 +462,18 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
            // TODO ..... catch ..
             e.printStackTrace();
             }
-	while(bt.isEnabled()){ bt.disable(); }
+	while(bt.isEnabled()){bt.disable();}
 	while(!isAirplaneon){cm.setAirplaneMode(true); isAirplaneon=true;}
-        Intent intent_IntentCall = new Intent();
-        intent_IntentCall.setClassName("com.asus.music","com.asus.music.MusicMainActivity");
-        intent_IntentCall.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        this.startActivity(intent_IntentCall);
-        SystemClock.sleep(10000);
-        sendkeyevent(KeyEvent.KEYCODE_MEDIA_PLAY);
+	Intent intent_IntentCall = new Intent();
+	intent_IntentCall.setClassName("com.asus.music","com.asus.music.MusicMainActivity");
+	intent_IntentCall.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	context.startActivity(intent_IntentCall);
+	SystemClock.sleep(5000);
+	sendkeyevent(KeyEvent.KEYCODE_MEDIA_PLAY);
 	wl.release();
 	}
 
 	if(settings==9){
-	Log.i("woden","video 720p"+10);
 	while(!pm.isScreenOn()){ sendkeyevent(KeyEvent.KEYCODE_POWER);}
 	wl.acquire();
 	sendkeyevent(KeyEvent.KEYCODE_MEDIA_PAUSE);
@@ -494,6 +486,7 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
         byte[] msgBuffer = message.getBytes();
         try {
             outstream.write(msgBuffer);
+	    Log.i("woden","Video-720p");
 	    SystemClock.sleep(3000);
 	    outstream.close();
 	    outstream=null;
@@ -501,22 +494,43 @@ if(isDataon){tm.setDataEnabled(false);isDataon=false;}
            // TODO ..... catch ..
             e.printStackTrace();
             }
-	while(bt.isEnabled()){ bt.disable(); }
+	while(bt.isEnabled()){bt.disable();}
 	while(!isAirplaneon){cm.setAirplaneMode(true); isAirplaneon=true;}
-	SystemClock.sleep(5000);
         sendkeyevent(KeyEvent.KEYCODE_MEDIA_PAUSE);
-        SystemClock.sleep(5000);
-        Intent intent_IntentCall = new Intent();
-        intent_IntentCall.setClassName("org.iii.romulus.meridian","org.iii.romulus.meridian.MainActivity");
-        intent_IntentCall.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        this.startActivity(intent_IntentCall);
-        SystemClock.sleep(7000);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_DOWN);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_DOWN);
-	SystemClock.sleep(3000);
-        sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
 	wl.release();
 	}
+
+        
+	if(settings==10){
+        while(!pm.isScreenOn()){ sendkeyevent(KeyEvent.KEYCODE_POWER);}
+        wl.acquire();
+                //////////////////////////////////////////////////////////////////////
+        while(isDataon){tm.setDataEnabled(false);isDataon=false;}
+        //////////////////////////////////////////////////////////////////////
+        ConnecttoBTServer();
+        String message = "Browsing-wifi";
+        byte[] msgBuffer = message.getBytes();
+        try {
+            outstream.write(msgBuffer);
+            Log.i("woden","Browsing-wifi");
+            SystemClock.sleep(3000);
+            outstream.close();
+            outstream=null;
+            } catch (IOException e) {
+           // TODO ..... catch ..
+            e.printStackTrace();
+            }
+        while(bt.isEnabled()){bt.disable();}
+	isAirplaneon=true;
+	Intent intent_IntentCall = new Intent("android.intent.action.VIEW",Uri.parse("http://218.211.38.216/"));
+	intent_IntentCall.setClassName("com.android.chrome","com.google.android.apps.chrome.Main");
+	intent_IntentCall.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	context.startActivity(intent_IntentCall);
+	SystemClock.sleep(7000);
+	sendxy(400,450);
+	w2.acquire(780000);
+	wl.release();
+        }
 
 	
 	this.onDestroy();

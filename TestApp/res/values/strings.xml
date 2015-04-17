@@ -14,5 +14,6 @@
     <string name="WiFi_on">WiFi on</string>
     <string name="CDMA_data_on">3G data on</string>
     <string name="WiFi_Connected">WiFi_Connected</string>
+    <string name="Browsing_wifi">Browsing Wifi</string>
 
 </resources>

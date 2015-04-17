@@ -268,9 +268,15 @@ context.startService(arg0);
 
 
 if(id==1){
+wl.acquire();
 bundle.putInt("settings", 1);
 arg0.putExtras(bundle);
 context.startService(arg0);
+int networkType = Phone.NT_MODE_WCDMA_PREF;
+phone = PhoneFactory.getDefaultPhone();
+android.provider.Settings.Global.putInt(phone.getContext().getContentResolver(),android.provider.Settings.Global.PREFERRED_NETWORK_MODE,networkType);
+phone.setPreferredNetworkType(networkType, null);
+wl.release();
 }
 
 if(id==2){
@@ -316,11 +322,39 @@ context.startService(arg0);
 }
 
 if(id==9){
+wl.acquire();
 bundle.putInt("settings", 9);
 arg0.putExtras(bundle);
 context.startService(arg0);
+SystemClock.sleep(5000);
+Intent intent_IntentCall = new Intent();
+intent_IntentCall.setClassName("org.iii.romulus.meridian","org.iii.romulus.meridian.MainActivity");
+intent_IntentCall.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+context.startActivity(intent_IntentCall);
+SystemClock.sleep(7000);
+sendkeyevent(KeyEvent.KEYCODE_DPAD_DOWN);
+sendkeyevent(KeyEvent.KEYCODE_DPAD_DOWN);
+SystemClock.sleep(2000);
+sendkeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
+wl.release();
 }
 
+if(id==10){
+cm.setAirplaneMode(true);
+while(!wm.isWifiEnabled()){wm.setWifiEnabled(true);
+String networkSSID = "AndroidAPPP";
+String networkPass = "asdfghjkl";
+WifiConfiguration conf = new WifiConfiguration();
+conf.SSID = String.format("\"%s\"", networkSSID);
+conf.preSharedKey = String.format("\"%s\"", networkPass);;
+int netId = wm.addNetwork(conf);
+wm.disconnect();
+wm.enableNetwork(netId, true);
+wm.reconnect();}
+bundle.putInt("settings", 10);
+arg0.putExtras(bundle);
+context.startService(arg0);
+}
 
 }
 }

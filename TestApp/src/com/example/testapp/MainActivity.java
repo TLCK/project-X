@@ -12,6 +12,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Toast;
 import android.provider.Settings.Global;
 import android.provider.Settings;
 import android.content.Context;
@@ -103,6 +104,7 @@ public class MainActivity extends Activity {
     private Phone phone;
     int x,y;
     private int i;
+    private long previous_time;
     String phone_number;
     //private static Phone mPhone;
     //private static MyHandler mHandler;
@@ -237,16 +239,19 @@ private BluetoothProfile.ServiceListener A2dpServiceListener = new BluetoothProf
         final CheckBox CDMA_data_on = (CheckBox)findViewById(R.id.checkBox2);
         final CheckBox WiFi_on = (CheckBox)findViewById(R.id.checkBox3);
         final CheckBox WiFi_Connected = (CheckBox)findViewById(R.id.checkBox4);
-        final CheckBox BT_on = (CheckBox)findViewById(R.id.checkBox5);
-        final CheckBox BT_Connected = (CheckBox)findViewById(R.id.checkBox6);
-        final CheckBox Screen_on_white_color_photo = (CheckBox)findViewById(R.id.checkBox7);
-        final CheckBox Screen_off_idle = (CheckBox)findViewById(R.id.checkBox8);
-        final CheckBox Audio_playback_HS = (CheckBox)findViewById(R.id.checkBox9);
-        final CheckBox Video_playback720p_HS = (CheckBox)findViewById(R.id.checkBox10);
+	final CheckBox Browsing_wifi = (CheckBox)findViewById(R.id.checkBox5);	
+        final CheckBox BT_on = (CheckBox)findViewById(R.id.checkBox6);
+        final CheckBox BT_Connected = (CheckBox)findViewById(R.id.checkBox7);
+        final CheckBox Screen_on_white_color_photo = (CheckBox)findViewById(R.id.checkBox8);
+        final CheckBox Screen_off_idle = (CheckBox)findViewById(R.id.checkBox9);
+        final CheckBox Audio_playback_HS = (CheckBox)findViewById(R.id.checkBox10);
+	final CheckBox Video_playback720p_HS = (CheckBox)findViewById(R.id.checkBox11);
         i=0;
     	Button start = (Button) findViewById(R.id.button1);
     	start.setOnClickListener(new OnClickListener(){
     		public void onClick(View arg){
+
+	previous_time = SystemClock.elapsedRealtime();
 
 	if(Flight_mode_suspend.isChecked()){
 	i++;
@@ -254,9 +259,10 @@ private BluetoothProfile.ServiceListener A2dpServiceListener = new BluetoothProf
         Bundle bundle = new Bundle();
         bundle.putInt("id", 0);
         intent.putExtras(bundle);
-        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, 0);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         long start_time = SystemClock.elapsedRealtime();
-        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*120000, pi);
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*1020000, pi);
+	previous_time = start_time + (i-1)*1020000;
 	}
 	
 	if(CDMA_data_on.isChecked()){
@@ -265,9 +271,10 @@ private BluetoothProfile.ServiceListener A2dpServiceListener = new BluetoothProf
         Bundle bundle = new Bundle();
         bundle.putInt("id", 1);
         intent.putExtras(bundle);
-        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, 0);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         long start_time = SystemClock.elapsedRealtime();
-        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*120000, pi);
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*1020000, pi);
+	previous_time = start_time + (i-1)*1020000;
         }
 
 	if(WiFi_on.isChecked()){
@@ -276,10 +283,11 @@ private BluetoothProfile.ServiceListener A2dpServiceListener = new BluetoothProf
         Bundle bundle = new Bundle();
         bundle.putInt("id", 2);
         intent.putExtras(bundle);
-        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, 0);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         long start_time = SystemClock.elapsedRealtime();
-        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*120000, pi);
-        }
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*1020000, pi);
+        previous_time = start_time + (i-1)*1020000;
+	}
 
 	if(WiFi_Connected.isChecked()){
 	i++;
@@ -287,10 +295,11 @@ private BluetoothProfile.ServiceListener A2dpServiceListener = new BluetoothProf
         Bundle bundle = new Bundle();
         bundle.putInt("id", 3);
         intent.putExtras(bundle);
-        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, 0);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         long start_time = SystemClock.elapsedRealtime();
-        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*120000, pi);
-        }
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*1020000, pi);
+        previous_time = start_time + (i-1)*1020000;
+	}
 
 	if(BT_on.isChecked()){
 	i++;
@@ -298,21 +307,11 @@ private BluetoothProfile.ServiceListener A2dpServiceListener = new BluetoothProf
         Bundle bundle = new Bundle();
         bundle.putInt("id", 4);
         intent.putExtras(bundle);
-        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, 0);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         long start_time = SystemClock.elapsedRealtime();
-        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*120000, pi);
-        }
-
-	if(BT_Connected.isChecked()){
-	i++;
-	Intent intent = new Intent(MainActivity.this, BrowsingReciever.class);
-        Bundle bundle = new Bundle();
-        bundle.putInt("id", 5);
-        intent.putExtras(bundle);
-        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, 0);
-        long start_time = SystemClock.elapsedRealtime();
-        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*120000, pi);
-        }
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*1020000, pi);
+        previous_time = start_time + (i-1)*1020000;
+	}
 
 	if(Screen_on_white_color_photo.isChecked()){
 	i++;
@@ -320,45 +319,149 @@ private BluetoothProfile.ServiceListener A2dpServiceListener = new BluetoothProf
         Bundle bundle = new Bundle();
         bundle.putInt("id", 6);
         intent.putExtras(bundle);
-        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, 0);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         long start_time = SystemClock.elapsedRealtime();
-        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*120000, pi);
-        }
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*1020000, pi);
+        previous_time = start_time + (i-1)*1020000;
+	}
 
 	if(Screen_off_idle.isChecked()){
 	i++;
+	if(Screen_on_white_color_photo.isChecked()){
 	Intent intent = new Intent(MainActivity.this, BrowsingReciever.class);
         Bundle bundle = new Bundle();
         bundle.putInt("id", 7);
         intent.putExtras(bundle);
-        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, 0);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         long start_time = SystemClock.elapsedRealtime();
-        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*120000, pi);
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-2)*1020000 + 420000, pi);
+	previous_time = start_time + (i-2)*1020000 + 420000;
         }
+	else{
+	Intent intent = new Intent(MainActivity.this, BrowsingReciever.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt("id", 7);
+        intent.putExtras(bundle);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        long start_time = SystemClock.elapsedRealtime();
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*1020000, pi);
+	previous_time = start_time + (i-1)*1020000;
+	}
+	}
 
 	if(Audio_playback_HS.isChecked()){
 	i++;
+	if(Screen_on_white_color_photo.isChecked() || Screen_off_idle.isChecked()){
 	Intent intent = new Intent(MainActivity.this, BrowsingReciever.class);
         Bundle bundle = new Bundle();
         bundle.putInt("id", 8);
         intent.putExtras(bundle);
-        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, 0);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         long start_time = SystemClock.elapsedRealtime();
-        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*120000, pi);
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, previous_time + 420000, pi);
+	previous_time = previous_time + 420000;
         }
+	else{
+	Intent intent = new Intent(MainActivity.this, BrowsingReciever.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt("id", 8);
+        intent.putExtras(bundle);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        long start_time = SystemClock.elapsedRealtime();
+	if(i==1){AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0 , pi);}
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, previous_time + 1020000, pi);
+	previous_time = previous_time + 1020000;
+	}	 			
+	}
 
 	if(Video_playback720p_HS.isChecked()){
 	i++;
+	if(Screen_on_white_color_photo.isChecked() || Screen_off_idle.isChecked() || Audio_playback_HS.isChecked()){
 	Intent intent = new Intent(MainActivity.this, BrowsingReciever.class);
         Bundle bundle = new Bundle();
         bundle.putInt("id", 9);
         intent.putExtras(bundle);
-        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, 0);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         long start_time = SystemClock.elapsedRealtime();
-        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, start_time + (i-1)*120000, pi);
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, previous_time + 420000, pi);
+        previous_time = previous_time + 420000;
+	}
+	else{
+	Intent intent = new Intent(MainActivity.this, BrowsingReciever.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt("id", 9);
+        intent.putExtras(bundle);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        long start_time = SystemClock.elapsedRealtime();
+	if(i==1){AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0 , pi);}
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP,  previous_time + 1020000, pi);
+	previous_time = previous_time + 1020000;
+	}
+	}
+
+	if(Browsing_wifi.isChecked()){
+        i++;
+	if(Screen_on_white_color_photo.isChecked() || Screen_off_idle.isChecked() || Audio_playback_HS.isChecked() || Video_playback720p_HS.isChecked()){
+        Intent intent = new Intent(MainActivity.this, BrowsingReciever.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt("id", 10);
+        intent.putExtras(bundle);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        long start_time = SystemClock.elapsedRealtime();
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, previous_time + 420000, pi);
+	previous_time = previous_time + 420000;
+	}
+	else{
+	Intent intent = new Intent(MainActivity.this, BrowsingReciever.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt("id", 10);
+        intent.putExtras(bundle);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        long start_time = SystemClock.elapsedRealtime();
+	if(i==1){AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0 , pi);}
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, previous_time + 1020000, pi);
+	previous_time = previous_time + 1020000;
+	}
+	}
+
+	if(BT_Connected.isChecked()){
+        i++;
+        if(Browsing_wifi.isChecked()){
+	Intent intent = new Intent(MainActivity.this, BrowsingReciever.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt("id", 5);
+        intent.putExtras(bundle);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        long start_time = SystemClock.elapsedRealtime();
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, previous_time + 820000, pi);
+	previous_time = previous_time + 820000;
         }
+	else{
+	if(Screen_on_white_color_photo.isChecked() || Screen_off_idle.isChecked() || Audio_playback_HS.isChecked() || Video_playback720p_HS.isChecked()){
+	Intent intent = new Intent(MainActivity.this, BrowsingReciever.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt("id", 5);
+        intent.putExtras(bundle);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        long start_time = SystemClock.elapsedRealtime();
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, previous_time + 420000, pi);
+	previous_time = previous_time + 420000;
+	}
+	else{
+        Intent intent = new Intent(MainActivity.this, BrowsingReciever.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt("id", 5);
+        intent.putExtras(bundle);
+        PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        long start_time = SystemClock.elapsedRealtime();
+	if(i==1){AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0 , pi);}
+        AM.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, previous_time + 1020000, pi);
+	previous_time = previous_time + 1020000;
+	}
+	}
+	}
 
-
+	i=0;
 /*String SPP_UUID = "00001101-0000-1000-8000-00805F9B34FB";
                    
 BluetoothDevice btDev = mBT.getRemoteDevice("00:1D:82:03:9E:CC");
